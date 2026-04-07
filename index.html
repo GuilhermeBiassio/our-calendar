@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendário Romântico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+        }
+        .heart {
+            color: #e91e63;
+        }
+        .big-heart {
+            color: #ad1457;
+            font-size: 1.5em;
+        }
+        .calendar-day {
+            transition: all 0.3s ease;
+        }
+        .past {
+            background-color: rgba(233, 30, 99, 0.2);
+            border-radius: 50%;
+        }
+        .current-day {
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 2px solid #e91e63;
+        }
+        .disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center p-4">
+    <h1 class="text-4xl font-bold text-white mb-8">Nosso Calendário Romântico</h1>
+
+    <div id="countdown" class="text-center mb-8">
+        <h2 class="text-2xl text-white mb-4">Contagem Regressiva para o Dia Especial</h2>
+        <div class="text-6xl font-mono text-white" id="timer">00:00:00:00</div>
+    </div>
+
+    <div class="flex items-start w-full">
+        <div class="flex justify-center align-items-center w-full sm:w-1/3 mb-6 sm:mb-0">
+            <img src="img/avatar-Elisa.png" alt="Avatar Elisa" class="h-100 w-80 " />
+        </div>
+
+        <div id="calendar" class="bg-white bg-opacity-90 rounded-lg p-6 shadow-lg flex flex-wrap gap-6 justify-center w-full sm:flex-1">
+        </div>
+
+        <div class="flex justify-center align-items-center w-full sm:w-1/3 mb-6 sm:mb-0">
+            <img src="img/avatar-Elisa.png" alt="Avatar Elisa" class="h-100 w-80 " />
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
