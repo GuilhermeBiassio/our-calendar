@@ -1,60 +1,219 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendário Romântico</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
-            min-height: 100vh;
-        }
-        .heart {
-            color: #e91e63;
-        }
-        .big-heart {
-            color: #ad1457;
-            font-size: 1.5em;
-        }
-        .calendar-day {
-            transition: all 0.3s ease;
-        }
-        .past {
-            background-color: rgba(233, 30, 99, 0.2);
-            border-radius: 50%;
-        }
-        .current-day {
-            background-color: rgba(255, 255, 255, 0.8);
-            border: 2px solid #e91e63;
-        }
-        .disabled {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosso Calendário 💕</title>
+  <meta name="description" content="Calendário romântico do casal — datas especiais e recados">
+  <meta name="theme-color" content="#e91e63">
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
 </head>
-<body class="flex flex-col items-center justify-center p-4">
-    <h1 class="text-4xl font-bold text-white mb-8">Nosso Calendário Romântico</h1>
+<body>
 
-    <div id="countdown" class="text-center mb-8">
-        <h2 class="text-2xl text-white mb-4">Contagem Regressiva para o Dia Especial</h2>
-        <div class="text-6xl font-mono text-white" id="timer">00:00:00:00</div>
+  <!-- ══════════════════════════════════════════
+       OVERLAY: Selecionar usuário
+       ══════════════════════════════════════════ -->
+  <div id="user-select-overlay" class="overlay hidden">
+    <div class="user-select-card">
+      <h2>Quem é você? 💕</h2>
+      <p>Selecione para personalizar sua experiência</p>
+      <div class="user-buttons">
+        <button class="user-btn" onclick="selectUser('Elisa')">
+          <img src="img/avatar-Elisa.png" alt="Elisa">
+          <span>Elisa</span>
+        </button>
+        <button class="user-btn" onclick="selectUser('Gui')">
+          <img src="img/avatar-Gui.png" alt="Gui">
+          <span>Gui</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       PAINEL DE NOTIFICAÇÕES (hoje)
+       ══════════════════════════════════════════ -->
+  <div id="notification-panel" class="notification-panel hidden" role="dialog" aria-label="Mensagens de hoje">
+    <div class="notif-header">
+      <span>💌 Mensagens de hoje</span>
+      <button class="notif-close-btn" onclick="closeNotifications()" aria-label="Fechar">×</button>
+    </div>
+    <div class="notif-body" id="notification-list"></div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       HEADER
+       ══════════════════════════════════════════ -->
+  <header class="app-header">
+    <!-- Usuário atual -->
+    <div class="header-side left">
+      <button
+        id="current-user-badge"
+        class="user-badge hidden"
+        onclick="changeUser()"
+        title="Trocar usuário"
+        aria-label="Trocar usuário"
+      >
+        <img id="current-user-avatar" src="" alt="Avatar" class="user-avatar-sm">
+        <span id="current-user-name"></span>
+      </button>
     </div>
 
-    <div class="flex items-start w-full">
-        <div class="flex justify-center align-items-center w-full sm:w-1/3 mb-6 sm:mb-0">
-            <img src="img/avatar-Elisa.png" alt="Avatar Elisa" class="h-100 w-80 " />
-        </div>
+    <!-- Título -->
+    <h1 class="header-title">
+      <span>Nosso Calendário</span>
+      <span class="heart-beat" aria-hidden="true">💕</span>
+    </h1>
 
-        <div id="calendar" class="bg-white bg-opacity-90 rounded-lg p-6 shadow-lg flex flex-wrap gap-6 justify-center w-full sm:flex-1">
-        </div>
-
-        <div class="flex justify-center align-items-center w-full sm:w-1/3 mb-6 sm:mb-0">
-            <img src="img/avatar-Gui.png" alt="Avatar Elisa" class="h-100 w-80 " />
-        </div>
+    <!-- Ações -->
+    <div class="header-side right">
+      <button
+        id="notification-btn"
+        class="icon-btn"
+        onclick="toggleNotifications()"
+        title="Ver mensagens de hoje"
+        aria-label="Notificações"
+      >
+        🔔
+        <span id="notification-badge" class="badge hidden" aria-live="polite">0</span>
+      </button>
+      <button
+        class="icon-btn"
+        onclick="openSettings()"
+        title="Configurações de datas"
+        aria-label="Configurações"
+      >
+        ⚙️
+      </button>
     </div>
+  </header>
 
-    <script src="script.js"></script>
+  <!-- ══════════════════════════════════════════
+       CONTEÚDO PRINCIPAL
+       ══════════════════════════════════════════ -->
+  <main class="app-main">
+
+    <!-- Contagem regressiva -->
+    <section class="countdown-section" aria-label="Contagem regressiva">
+      <p class="countdown-label">Faltam para o nosso dia especial...</p>
+      <div class="countdown-timer" role="timer" aria-live="off">
+        <div class="timer-block">
+          <span id="timer-days">00</span>
+          <label>dias</label>
+        </div>
+        <div class="timer-sep" aria-hidden="true">:</div>
+        <div class="timer-block">
+          <span id="timer-hours">00</span>
+          <label>horas</label>
+        </div>
+        <div class="timer-sep" aria-hidden="true">:</div>
+        <div class="timer-block">
+          <span id="timer-minutes">00</span>
+          <label>minutos</label>
+        </div>
+        <div class="timer-sep" aria-hidden="true">:</div>
+        <div class="timer-block">
+          <span id="timer-seconds">00</span>
+          <label>segundos</label>
+        </div>
+      </div>
+    </section>
+
+    <!-- Calendário + Avatares -->
+    <section class="calendar-area" aria-label="Calendário">
+      <div class="avatar-side" aria-hidden="true">
+        <img src="img/avatar-Elisa.png" alt="Elisa" class="avatar-img">
+        <span class="avatar-name">Elisa</span>
+      </div>
+
+      <div id="calendar" class="calendar-container" role="grid"></div>
+
+      <div class="avatar-side" aria-hidden="true">
+        <img src="img/avatar-Gui.png" alt="Gui" class="avatar-img">
+        <span class="avatar-name">Gui</span>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       MODAL: Configurações de datas
+       ══════════════════════════════════════════ -->
+  <div id="settings-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="settings-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="settings-title">Configurações ⚙️</h2>
+        <button class="close-btn" onclick="closeSettings()" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="input-start">📅 Data de início do período</label>
+          <input type="date" id="input-start" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="input-end">📅 Data de término do período</label>
+          <input type="date" id="input-end" class="form-input">
+        </div>
+        <div class="form-group">
+          <label for="input-desire">💘 Data especial (contagem regressiva)</label>
+          <input type="date" id="input-desire" class="form-input">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeSettings()">Cancelar</button>
+        <button class="btn-primary" onclick="saveSettings()">Salvar 💕</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       MODAL: Recados do dia
+       ══════════════════════════════════════════ -->
+  <div id="day-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="day-modal-title">
+    <div class="modal-card wide">
+      <div class="modal-header">
+        <h2 id="day-modal-title">Dia</h2>
+        <button class="close-btn" onclick="closeDayModal()" aria-label="Fechar">×</button>
+      </div>
+      <div class="modal-body">
+        <div id="messages-list" class="messages-list" aria-live="polite"></div>
+        <div class="message-input-area">
+          <textarea
+            id="message-input"
+            class="message-textarea"
+            placeholder="Escreva uma mensagem... (Ctrl+Enter para enviar)"
+            rows="3"
+            aria-label="Digite sua mensagem"
+          ></textarea>
+          <button class="btn-primary send-btn" onclick="sendMessage()">Enviar 💌</button>
+        </div>
+        <p class="textarea-hint">Ctrl + Enter para enviar</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════
+       TOAST
+       ══════════════════════════════════════════ -->
+  <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+  <!-- ══════════════════════════════════════════
+       SCRIPTS
+       ══════════════════════════════════════════ -->
+  <!-- Firebase SDK (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- Config do Firebase (edite com suas credenciais) -->
+  <script src="firebase-config.js"></script>
+
+  <!-- Aplicação -->
+  <script src="app.js"></script>
 </body>
 </html>
