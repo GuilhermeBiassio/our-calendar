@@ -381,10 +381,12 @@ async function checkTodayNotifications() {
 
   const badge    = document.getElementById('notification-badge');
   const notifBtn = document.getElementById('notification-btn');
-  const count    = todayMessages.length;
 
-  if (count > 0) {
-    badge.textContent = count > 9 ? '9+' : String(count);
+  const lastSeen   = Number(localStorage.getItem('notif-last-seen') || 0);
+  const unreadCount = todayMessages.filter(m => new Date(m.timestamp).getTime() > lastSeen).length;
+
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount > 9 ? '9+' : String(unreadCount);
     badge.classList.remove('hidden');
     notifBtn.classList.add('has-notification');
   } else {
@@ -397,7 +399,12 @@ function toggleNotifications() {
   const panel   = document.getElementById('notification-panel');
   const opening = panel.classList.contains('hidden');
   panel.classList.toggle('hidden');
-  if (opening) _renderNotifications();
+  if (opening) {
+    _renderNotifications();
+    localStorage.setItem('notif-last-seen', Date.now());
+    document.getElementById('notification-badge').classList.add('hidden');
+    document.getElementById('notification-btn').classList.remove('has-notification');
+  }
 }
 
 function closeNotifications() {
