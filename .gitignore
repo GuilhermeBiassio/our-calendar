@@ -1,0 +1,7 @@
+# Credenciais Firebase — NÃO commitar
+firebase-config.js
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db

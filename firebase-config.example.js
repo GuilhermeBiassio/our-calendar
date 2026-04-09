@@ -1,13 +1,22 @@
 /**
- * CONFIGURAÇÃO DO FIREBASE
- * ========================
- * Este arquivo está no .gitignore — preencha com suas credenciais reais.
- * Copie de firebase-config.example.js e substitua os valores abaixo.
+ * CONFIGURAÇÃO DO FIREBASE — TEMPLATE
+ * =====================================
+ * NÃO coloque credenciais reais aqui. Este arquivo é versionado no git.
  *
- * Para obter as credenciais:
- *   1. Acesse https://console.firebase.google.com/
- *   2. Selecione o projeto > Configurações > Seus aplicativos
- *   3. Copie o firebaseConfig
+ * Para desenvolvimento local:
+ *   Copie este arquivo como "firebase-config.js" e preencha com suas credenciais.
+ *   O arquivo firebase-config.js está no .gitignore e nunca será commitado.
+ *
+ * Para produção (GitHub Pages):
+ *   As credenciais são injetadas automaticamente pelo GitHub Actions via Secrets.
+ *   Configure os secrets em: Settings > Secrets and variables > Actions
+ *     - FIREBASE_API_KEY
+ *     - FIREBASE_AUTH_DOMAIN
+ *     - FIREBASE_PROJECT_ID
+ *     - FIREBASE_STORAGE_BUCKET
+ *     - FIREBASE_MESSAGING_SENDER_ID
+ *     - FIREBASE_APP_ID
+ *     - FIREBASE_MEASUREMENT_ID
  */
 
 const firebaseConfig = {
@@ -36,5 +45,5 @@ try {
 } catch (e) {
   window.firebaseEnabled = false;
   console.warn('%c Firebase não configurado — usando localStorage como fallback.', 'color: #ff9800;');
-  console.warn('Edite firebase-config.js com as credenciais do seu projeto.');
+  console.warn('Copie firebase-config.example.js como firebase-config.js e preencha as credenciais.');
 }
